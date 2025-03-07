@@ -1,0 +1,46 @@
+﻿<main class="default-transition">
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            <div class="col-md-9">
+                <div class="form-side p-3 w-100" style="max-height: 90vh; overflow: auto;">
+                    <h5 class="mb-4">Employee Report Dashboard</h5>
+
+                    <div class="table-responsive">
+                        <table class="table-striped table-bordered table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">User Name</th>
+                                    <th scope="col">Employee Name</th>
+                                    <th scope="col">Patch In</th>
+                                    <th scope="col">Patch Out</th>
+                                    <th scope="col">Present</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var record in Model)
+                                {
+                                    <tr>
+                                        <td>@(record.UserName ?? "Unknown User")</td>
+                                        <td>@(record.NameOfUser ?? "Unknown")</td>
+                                        <td>@(record.PatchIn?.ToString("yyyy-MM-dd HH:mm:ss") ?? "No Patch In")</td>
+                                        <td>@(record.PatchOut?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Not Patched Out")</td>
+                                        <td>
+                                            @if (record.IsPresent)
+                                            {
+                                                <span class="badge bg-success">Present</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Absent</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

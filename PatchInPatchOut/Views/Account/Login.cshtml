@@ -1,0 +1,96 @@
+﻿@{
+    Layout = null;
+}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login to user</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="~/css/style.css">
+</head>
+
+<body>
+    <main class="default-transition">
+        <div class="container-fluid h-100">
+            <!-- <div class="logo_wrap">
+                <a href="#" target="_blank">
+                    <img src="img/logo.png" class="img-fluid" width="35" alt="logo">
+                </a>
+            </div> -->
+            <div class="row h-100">
+                <div class="col-12 col-lg-4 col-xl-4 col-xxl-3 m-auto">
+                    <div class="form-side">
+                        <form action="/Account/Login" method="post">
+                            <div class="form-group">
+                                <div class="position-absolute top-0 start-50 translate-middle-x w-100 text-center" style="z-index: 1050;">
+                                    @if (TempData["LogoutMessage"] != null)
+                                    {
+                                        <div id="logoutMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+                                            @TempData["LogoutMessage"]
+                                        </div>
+                                    }
+                                </div>
+
+                                <h3>Login for Employee</h3>
+                                @if (ViewBag.Error != null)
+                                {
+                                    <div id="errorAlert" class="alert alert-danger p-2 text-center" role="alert">
+                                        @ViewBag.Error
+                                    </div>
+                                }
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label fw-semibold">UserName</label>
+                                <input type="email" name="UserName" class="form-control form-control-sm" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label fw-semibold">Password</label>
+                                <input type="password" name="password" class="form-control form-control-sm" required />
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <button type="submit" class="login_btn text-center">Login</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let errorAlert = document.getElementById("errorAlert");
+        if (errorAlert) {
+            setTimeout(() => {
+                errorAlert.style.display = "none";
+            }, 800); // Hides after 0.8 seconds
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let logoutMessage = document.getElementById("logoutMessage");
+        if (logoutMessage) {
+            setTimeout(() => {
+                let bsAlert = new bootstrap.Alert(logoutMessage);
+                bsAlert.close(); // Bootstrap's built-in dismiss method
+            }, 1000); // Hide after 1 second
+        }
+    });
+</script>

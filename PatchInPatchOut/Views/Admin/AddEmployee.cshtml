@@ -1,0 +1,49 @@
+﻿
+
+        <div class="row h-100">
+            <div class="col-12 col-lg-4 col-xl-4 col-xxl-3 m-auto">
+                <div class="form-side">
+                    <!-- Display Success and Error Messages -->
+                    @if (TempData["ExitUser"] != null)
+                    {
+                        <div class="alert alert-danger text-center">@TempData["ExitUser"]</div>
+                    }
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success text-center">@TempData["Success"]</div>
+                    }
+
+                    <form asp-action="AddEmployee" asp-controller="Admin" method="post">
+                        <div class="form-group">
+                            <h3>Add Employee</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label fw-semibold">Enter Employee Name</label>
+                            <input type="text" name="NameOfUser" class="form-control form-control-sm" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label fw-semibold">Department</label>
+                            <input type="text" name="Department" class="form-control form-control-sm" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label fw-semibold">Enter Username</label>
+                            <input type="text" name="UserName" class="form-control form-control-sm" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label fw-semibold">Enter Password</label>
+                            <input type="password" name="Password" class="form-control form-control-sm" required />
+                        </div>
+
+                        <div class="d-flex justify-content-center">
+                            <button type="submit" class="login_btn text-center">Add Employee</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+   
