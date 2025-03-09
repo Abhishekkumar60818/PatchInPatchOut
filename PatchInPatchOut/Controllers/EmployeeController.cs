@@ -30,7 +30,8 @@ namespace PatchInPatchOut.Controllers
                     Department = a.UserDetails.Department,
                     PatchIn = (DateTime?)a.PatchIn,
                     PatchOut = (DateTime?)a.PatchOut,
-                    IsPresent = a.IsPresent
+                    IsPresent = a.IsPresent,
+                    a.QRGeneratedDate
                 })
                 .ToList();
 
@@ -44,7 +45,7 @@ namespace PatchInPatchOut.Controllers
         }
 
         [HttpPost]
-        public IActionResult ProcessQRCode(string scannedQRCode)
+        public async Task<IActionResult> ProcessQRCode(string scannedQRCode)
         {
             var today = DateTime.Now.Date;
             var userId = HttpContext.Session.GetInt32("UserId"); // Get the logged-in user
@@ -55,41 +56,56 @@ namespace PatchInPatchOut.Controllers
             }
 
 
-            var todayQR = _context.Attendances.FirstOrDefault(a => a.QRGeneratedDate.Date == today);
+            var todayQR = await _context.Attendances.FirstOrDefaultAsync(a => a.QRGeneratedDate.Date == today);
 
             if (todayQR == null || todayQR.QRCode != scannedQRCode)
             {
                 return Json(new { success = false, message = "Invalid QR Code." });
             }
 
-            var attendance = _context.Attendances
+            var attendance = await _context.Attendances
                 .Where(a => a.UserId == userId)
                 .OrderByDescending(a => a.PatchIn)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
+
+
 
             var now = DateTime.Now;
 
+
             if (attendance == null || attendance.QRGeneratedDate.Date != today)
             {
+
+
                 var newAttendance = new Attendance
                 {
                     UserId = userId.Value,
                     PatchIn = now,
                     QRCode = scannedQRCode,
-                    QRGeneratedDate = now,
+                    QRGeneratedDate = DateTime.Now,
                     IsPresent = true
                 };
 
-                _context.Attendances.Add(newAttendance);
+                await _context.Attendances.AddAsync(newAttendance);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Check-in successful!" });
+
             }
+
             else
             {
                 attendance.PatchOut = now;
                 _context.Attendances.Update(attendance);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Check-out successful!" });
+
+
             }
 
-            _context.SaveChanges();
-            return Json(new { success = true, message = "Attendance updated successfully!" });
+
+
+
+
         }
 
     }

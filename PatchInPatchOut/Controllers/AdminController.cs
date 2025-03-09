@@ -31,7 +31,8 @@ namespace PatchInPatchOut.Controllers
                     NameOfUser = a.UserDetails.NameOfUser,
                     PatchIn = (DateTime?)a.PatchIn,
                     PatchOut = (DateTime?)a.PatchOut,
-                    IsPresent = a.IsPresent
+                    IsPresent = a.IsPresent,
+                    a.QRGeneratedDate
                 })
                 .ToList();
 

@@ -25,18 +25,23 @@
                                         <td>@(record.PatchIn?.ToString("yyyy-MM-dd HH:mm:ss") ?? "No Patch In")</td>
                                         <td>@(record.PatchOut?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Not Patched Out")</td>
                                         <td>
-                                            @if (record.IsPresent)
+                                            @if (record.PatchOut == null && record.QRGeneratedDate.Date < DateTime.Now.Date)
+                                            {
+                                                <span class="badge bg-danger">Absent</span>
+                                            }
+                                            else if (record.IsPresent)
                                             {
                                                 <span class="badge bg-success">Present</span>
                                             }
                                             else
                                             {
-                                                <span class="badge bg-danger">Absent</span>
+                                                <span class="badge bg-warning">Unknown</span>
                                             }
                                         </td>
                                     </tr>
                                 }
                             </tbody>
+
                         </table>
                     </div>
                 </div>
