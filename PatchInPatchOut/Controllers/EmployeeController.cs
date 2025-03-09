@@ -57,7 +57,7 @@ namespace PatchInPatchOut.Controllers
 
             var todayQR = _context.Attendances.FirstOrDefault(a => a.QRGeneratedDate.Date == today);
 
-            if (todayQR == null && todayQR.QRCode != scannedQRCode)
+            if (todayQR == null || todayQR.QRCode != scannedQRCode)
             {
                 return Json(new { success = false, message = "Invalid QR Code." });
             }
@@ -69,13 +69,13 @@ namespace PatchInPatchOut.Controllers
 
             var now = DateTime.Now;
 
-            if (attendance == null || attendance.PatchIn == null)
+            if (attendance == null || attendance.QRGeneratedDate.Date != today)
             {
                 var newAttendance = new Attendance
                 {
                     UserId = userId.Value,
                     PatchIn = now,
-                    QRCode = todayQR.QRCode,
+                    QRCode = scannedQRCode,
                     QRGeneratedDate = now,
                     IsPresent = true
                 };

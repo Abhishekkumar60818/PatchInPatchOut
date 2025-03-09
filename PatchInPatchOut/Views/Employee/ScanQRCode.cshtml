@@ -59,7 +59,8 @@
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            let code = jsQR(imageData.data, imageData.width, imageData.height);
+            let ConvertedData = new Uint8ClampedArray(imageData.data);
+            let code = jsQR(ConvertedData, imageData.width, imageData.height);
 
             if (code) {
                 scanning = false; //  Stop further scanning
@@ -86,10 +87,10 @@
     }
 
     function sendQRCodeToServer(qrCodeData) {
-        fetch("/Employee/ProcessQRCode", {
+        fetch("/Employee/ProcessQRCode?scannedQRCode=" + encodeURIComponent(qrCodeData), {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ scannedQRCode: qrCodeData })
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "scannedQRCode=" + encodeURIComponent(qrCodeData)
         })
         .then(response => response.json())
         .then(data => {
