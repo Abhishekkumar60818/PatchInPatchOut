@@ -16,7 +16,7 @@ namespace PatchInPatchOut.Controllers
         {
             _context = context;
         }
-        public IActionResult EmployeeReportDashboard()
+        public IActionResult EmployeeReportDashboard(User user)
         {
             if (HttpContext.Session.GetString("UserRole") != "Admin")
                 return RedirectToAction("Login", "Account");
@@ -24,18 +24,8 @@ namespace PatchInPatchOut.Controllers
             var attendanceRecords = _context.Attendances
                 .Include(a => a.UserDetails)
                 .Where(a => a.UserDetails != null && a.UserDetails.Role != UserRole.Admin)
-                .Select(a => new
-                {
-                    UserId = a.UserDetails.UserId,
-                    UserName = a.UserDetails.UserName,
-                    NameOfUser = a.UserDetails.NameOfUser,
-                    PatchIn = (DateTime?)a.PatchIn,
-                    PatchOut = (DateTime?)a.PatchOut,
-                    IsPresent = a.IsPresent,
-                    a.QRGeneratedDate
-                })
+                .OrderByDescending(a => a.PatchIn)
                 .ToList();
-
             return View(attendanceRecords);
         }
 
@@ -44,27 +34,36 @@ namespace PatchInPatchOut.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> AddEmployee(User user)
+        public async Task<IActionResult> AddEmployee(User model)
         {
             if (HttpContext.Session.GetString("UserRole") != "Admin")
                 return RedirectToAction("Login", "Account");
 
-            var exitingUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
-            if (exitingUser != null)
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);
+            if (existingUser != null)
             {
                 ViewBag.Error = "Username already exists. Please use a different Username.";
-                return View(user);  // This allows user to see their input with error
+                return View(model);  // Return input with error message
             }
 
-            string hashedPassword = HashPassword(user.Password);
-            _context.Users.Add(new User
+            // Ensure password is not null before hashing
+            string hashedPassword = !string.IsNullOrEmpty(model.Password) ? HashPassword(model.Password) : throw new ArgumentException("Password cannot be empty.");
+
+            var user = new User
             {
-                NameOfUser = user.NameOfUser,
-                UserName = user.UserName,
-                Department = user.Department,
+                NameOfUser = model.NameOfUser,
+                UserName = model.UserName,
+                Department = model.Department,
                 Password = hashedPassword,
-                Role = UserRole.Employee
-            });
+                Role = UserRole.Employee,
+                ShiftStart = model.ShiftStart,
+                ShiftEnd = model.ShiftEnd,
+                SpacingShiftIn = (model.ShiftInHours ?? 0) * 60 + (model.ShiftInMinutes ?? 0),
+                SpacingShiftOut = (model.ShiftOutHours ?? 0) * 60 + (model.ShiftOutMinutes ?? 0)
+            };
+
+            // Save to database
+            await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Employee added successfully!";
@@ -78,6 +77,7 @@ namespace PatchInPatchOut.Controllers
 
             var employees = _context.Users
                 .Where(u => u.Role == UserRole.Employee) // Exclude Admins
+                .OrderByDescending(u => u.UserId)
                 .ToList();
 
             return View(employees); // Pass only employees to the view

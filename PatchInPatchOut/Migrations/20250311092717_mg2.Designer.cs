@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PatchInPatchOut.Data;
 
@@ -11,9 +12,11 @@ using PatchInPatchOut.Data;
 namespace PatchInPatchOut.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250311092717_mg2")]
+    partial class mg2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,12 +86,6 @@ namespace PatchInPatchOut.Migrations
 
                     b.Property<TimeOnly?>("ShiftStart")
                         .HasColumnType("time");
-
-                    b.Property<int?>("SpacingShiftIn")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SpacingShiftOut")
-                        .HasColumnType("int");
 
                     b.Property<string>("UserName")
                         .IsRequired()

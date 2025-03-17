@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PatchInPatchOut.Data;
+using PatchInPatchOut.ViewModel;
 
 namespace PatchInPatchOut.Controllers
 {
@@ -21,18 +22,29 @@ namespace PatchInPatchOut.Controllers
                 return RedirectToAction("Login", "Account");
 
             var myAttendanceRecords = _context.Attendances
-                .Include(a => a.UserDetails)
+            .Include(a => a.UserDetails)
                 .Where(a => a.UserId == userId)
-                .Select(a => new
+                .Select(x => new AttendanceModel()
                 {
-                    UserName = a.UserDetails.UserName,
-                    NameOfUser = a.UserDetails.NameOfUser,
-                    Department = a.UserDetails.Department,
-                    PatchIn = (DateTime?)a.PatchIn,
-                    PatchOut = (DateTime?)a.PatchOut,
-                    IsPresent = a.IsPresent,
-                    a.QRGeneratedDate
+                    AttendanceId = x.AttendanceId,
+                    UserId = x.UserId,
+                    UserDetails = new UserModel()
+                    {
+                        UserId = x.UserDetails.UserId,
+                        NameOfUser = x.UserDetails.NameOfUser,
+                        Department = x.UserDetails.Department,
+                        UserName = x.UserDetails.UserName,
+                        ShiftStart = x.UserDetails.ShiftStart,
+                        ShiftEnd = x.UserDetails.ShiftEnd,
+                        Role = x.UserDetails.Role
+                    },
+                    PatchIn = x.PatchIn,
+                    PatchOut = x.PatchOut,
+                    IsPresent = x.IsPresent,
+                    QRCode = x.QRCode,
+                    QRGeneratedDate = x.QRGeneratedDate,
                 })
+                .OrderByDescending(a => a.PatchIn)
                 .ToList();
 
             return View(myAttendanceRecords);
@@ -64,23 +76,16 @@ namespace PatchInPatchOut.Controllers
             }
 
             var attendance = await _context.Attendances
-                .Where(a => a.UserId == userId)
+                .Where(a => a.UserId == userId && a.QRGeneratedDate.Date == today)
                 .OrderByDescending(a => a.PatchIn)
                 .FirstOrDefaultAsync();
 
-
-
-            var now = DateTime.Now;
-
-
-            if (attendance == null || attendance.QRGeneratedDate.Date != today)
+            if (attendance == null)
             {
-
-
                 var newAttendance = new Attendance
                 {
                     UserId = userId.Value,
-                    PatchIn = now,
+                    PatchIn = DateTime.Now,
                     QRCode = scannedQRCode,
                     QRGeneratedDate = DateTime.Now,
                     IsPresent = true
@@ -94,7 +99,7 @@ namespace PatchInPatchOut.Controllers
 
             else
             {
-                attendance.PatchOut = now;
+                attendance.PatchOut = DateTime.Now;
                 _context.Attendances.Update(attendance);
                 await _context.SaveChangesAsync();
                 return Json(new { success = true, message = "Check-out successful!" });

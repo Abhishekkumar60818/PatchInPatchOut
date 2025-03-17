@@ -1,49 +1,96 @@
-﻿
+﻿<div class="row h-100">
+    <div class="col-12 col-lg-4 col-xl-4 col-xxl-3 m-auto" style="max-height: 80vh; overflow: auto;">
+        <div class="form-side">
+            <!-- Display Success and Error Messages -->
+            @if (TempData["ExitUser"] != null)
+            {
+                <div class="alert alert-danger text-center">@TempData["ExitUser"]</div>
+            }
 
-        <div class="row h-100">
-            <div class="col-12 col-lg-4 col-xl-4 col-xxl-3 m-auto">
-                <div class="form-side">
-                    <!-- Display Success and Error Messages -->
-                    @if (TempData["ExitUser"] != null)
-                    {
-                        <div class="alert alert-danger text-center">@TempData["ExitUser"]</div>
-                    }
+            @if (TempData["Success"] != null)
+            {
+                <div id="AddemployeeMessage" class="alert alert-success alert-dismissible fade show" role="alert">@TempData["Success"]</div>
+            }
 
-                    @if (TempData["Success"] != null)
-                    {
-                        <div class="alert alert-success text-center">@TempData["Success"]</div>
-                    }
-
-                    <form asp-action="AddEmployee" asp-controller="Admin" method="post">
-                        <div class="form-group">
-                            <h3>Add Employee</h3>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label fw-semibold">Enter Employee Name</label>
-                            <input type="text" name="NameOfUser" class="form-control form-control-sm" required />
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label fw-semibold">Department</label>
-                            <input type="text" name="Department" class="form-control form-control-sm" required />
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label fw-semibold">Enter Username</label>
-                            <input type="text" name="UserName" class="form-control form-control-sm" required />
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label fw-semibold">Enter Password</label>
-                            <input type="password" name="Password" class="form-control form-control-sm" required />
-                        </div>
-
-                        <div class="d-flex justify-content-center">
-                            <button type="submit" class="login_btn text-center">Add Employee</button>
-                        </div>
-                    </form>
+            <form asp-action="AddEmployee" asp-controller="Admin" method="post">
+                <div class="form-group">
+                    <h3>Add Employee</h3>
                 </div>
-            </div>
+
+                <div class="form-group">
+                    <label class="form-label fw-semibold">Enter Employee Name</label>
+                    <input type="text" name="NameOfUser" class="form-control form-control-sm" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label fw-semibold">Department</label>
+                    <input type="text" name="Department" class="form-control form-control-sm" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label fw-semibold">Enter Username</label>
+                    <input type="text" name="UserName" class="form-control form-control-sm" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label fw-semibold">Enter Password</label>
+                    <input type="password" name="Password" class="form-control form-control-sm" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label fw-semibold">Shift Start</label>
+                    <input type="time" name="ShiftStart" class="form-control form-control-sm" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label fw-semibold">Shift End</label>
+                    <input type="time" name="ShiftEnd" class="form-control form-control-sm" required />
+                </div>
+
+                <!-- New Fields for SpacingShiftIn -->
+                <div class="form-group">
+                    <label class="form-label fw-semibold">Add Relaxation time when Shift In</label>
+                    <div class="row">
+                        <div class="col">
+                            <input type="number" name="ShiftInHours" class="form-control form-control-sm" placeholder="Hours" min="0">
+                        </div>
+                        <div class="col">
+                            <input type="number" name="ShiftInMinutes" class="form-control form-control-sm" placeholder="Minutes" min="0" max="59">
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!-- New Fields for SpacingShiftOut -->
+                <div class="form-group">
+                    <label class="form-label fw-semibold">Add Relaxation time when Shift Out</label>
+                    <div class="row">
+                        <div class="col">
+                            <input type="number" name="ShiftOutHours" class="form-control form-control-sm" placeholder="Hours" min="0">
+                        </div>
+                        <div class="col">
+                            <input type="number" name="ShiftOutMinutes" class="form-control form-control-sm" placeholder="Minutes" min="0" max="59">
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="login_btn text-center">Add Employee</button>
+                </div>
+            </form>
         </div>
-   
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let AddemployeeMessage = document.getElementById("AddemployeeMessage");
+        if (AddemployeeMessage) {
+            setTimeout(() => {
+                let bsAlert = new bootstrap.Alert(AddemployeeMessage);
+                bsAlert.close(); // Bootstrap's built-in dismiss method
+            }, 1000); // Hide after 1 second
+        }
+    });
+</script>

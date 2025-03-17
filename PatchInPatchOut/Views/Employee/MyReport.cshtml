@@ -1,4 +1,5 @@
-﻿<main class="default-transition">
+﻿@model List<PatchInPatchOut.ViewModel.AttendanceModel>
+<main class="default-transition">
     <div class="container-fluid h-100">
         <div class="row h-100">
             <div class="col-md-9">
@@ -14,6 +15,7 @@
                                     <th scope="col">Department</th>
                                     <th scope="col">Patch In</th>
                                     <th scope="col">Patch Out</th>
+                                    <th scope="col">Emp. Shift</th>
                                     <th scope="col">Present</th>
                                 </tr>
                             </thead>
@@ -21,15 +23,25 @@
                                 @foreach (var record in Model)
                                 {
                                     <tr>
-                                        <td>@(record.UserName ?? "Unknown User")</td>
-                                        <td>@(record.NameOfUser ?? "Unknown")</td>
-                                        <td>@(record.Department ?? "Not Assigned")</td>
+                                        <td>@(record.UserDetails.UserName ?? "Unknown User")</td>
+                                        <td>@(record.UserDetails.NameOfUser ?? "Unknown")</td>
+                                        <td>@(record.UserDetails.Department ?? "Not Assigned")</td>
                                         <td>@(record.PatchIn?.ToString("yyyy-MM-dd HH:mm:ss") ?? "No Patch In")</td>
                                         <td>@(record.PatchOut?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Not Patched Out")</td>
                                         <td>
+                                            @if (record.UserDetails?.ShiftStart.HasValue == true && record.UserDetails?.ShiftEnd.HasValue == true)
+                                            {
+                                                <span>@(record.UserDetails.ShiftStart) - @(record.UserDetails.ShiftEnd)</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Not Available</span>
+                                            }
+                                        </td>
+                                        <td>
                                             @if (record.PatchOut == null && record.QRGeneratedDate.Date < DateTime.Now.Date)
                                             {
-                                                <span class="badge bg-danger">Absent</span>
+                                                <span class="badge bg-warning">HalfDay</span>
                                             }
                                             else if (record.IsPresent)
                                             {
